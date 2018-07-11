@@ -81,7 +81,6 @@ Essential for functionality of the library, adds the backdrop.
 Element correlating to the steps passed to the library. 
 
 It should be placed in the component that has the reference element in it.
-
 | Attribute | Type        | Optional |
 | --------- | ----------- | -------- |
 | id        | number      | no       |
