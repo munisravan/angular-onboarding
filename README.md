@@ -1,27 +1,118 @@
-# AngularOnboardingApp
+# angular-onboarding
+## Getting Started
+1. `npm i --save-dev angular-onboarding`
+2. Edit your module file to import `AngularOnboardingModule` and pass a config
+```typescript
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 6.0.8.
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { AngularOnboardingModule } from 'angular-onboarding';
 
-## Development server
+@NgModule({
+  declarations: [
+    AppComponent,
+    DashboardComponent
+  ],
+  imports: [
+    BrowserModule,
+    AngularOnboardingModule.forRoot({
+      steps: [
+        {
+          id: 0,
+          text: 'This is your home!',
+          path: '/'
+        },
+        {
+          id: 1,
+          text: 'This is your dashboard!',
+          path: '/dashboard'
+        }
+      ]
+    }),
+    AppRoutingModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```
+3. Edit your app component file to include `<ao-overlay></ao-overlay>`
+4. Add `ao-step` to every component file with a element you want to showcase.
+```html
+<button #logoutButton>Logout</button>
+<ao-step id="0" [element]="logoutButton" location="above"></ao-step>
+```
+5. Define a function to handel the routing it will be passed a path as a string.
+6. Import `AngularOnboardingSerivce` and call `start()` with the routing handler!
+```typescript
+import { Component, AfterViewInit } from '@angular/core';
+import { AngularOnboardingService } from 'angular-onboarding';
+import { Router } from '@angular/router';
 
-## Code scaffolding
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent implements AfterViewInit {
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+  constructor(private router: Router, private aoService: AngularOnboardingService) {
+    aoService.navigateSubject.subscribe(path => {
+      router.navigateByUrl(path);
+    });
+  }
 
-## Build
+  ngAfterViewInit() {
+    this.aoService.start();
+  }
+}
+```
+## Docs
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+### Components
+#### Overlay `<ao-overlay></ao-overlay>`
+Essential for functionality of the library, adds the backdrop.
 
-## Running unit tests
+#### Step `<ao-step></ao-step>`
+Element correlating to the steps passed to the library. 
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+It should be placed in the component that has the reference element in it.
+| Attribute | Type        | Optional |
+| --------- | ----------- | -------- |
+| id        | number      | no       |
+| element   | HTMLElement | no       |
+| location  | string      | no       |
 
-## Running end-to-end tests
+### Services
+#### AngularOnboardingService
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+| Method       | Description                                 |
+| ------------ | ------------------------------------------- |
+| start()      | Starts / resumes the tutorial.              |
+| isFinished() | Returns if the user finished the onboarding |
+| reset()      | Resets all tutorial data.                   |
 
-## Further help
+### Interfaces
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+#### Step
+| Property | Type   | Optional | Extra                                      |
+| -------- | ------ | -------- | ------------------------------------------ |
+| id       | number | no       |                                            |
+| text     | string | no       |                                            |
+| route    | string | yes      | The route that the step will be located on |
+
+#### Config
+| Property  | Type   | Optional |
+| --------- | ------ | -------- |
+| steps     | Step[] | no       |
+| padding   | number | yes      |
+
+#### AOStorage
+| Property | Type    | Optional |
+| -------- | ------- | -------- |
+| step     | number  | no       |
+| enabled  | boolean | no       |

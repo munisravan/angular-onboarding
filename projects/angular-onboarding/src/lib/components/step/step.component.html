@@ -1,0 +1,15 @@
+<div #box class="box" [style.left]="position[0]" [style.top]="position[1]" [@visibilityState]="state" *ngIf="loaded">
+  <div>
+    {{ text }}
+    <br>
+    <i style="display: none;">{{ id }}</i>
+  </div>
+  <div>
+    <div class="prev-next">
+      <button [disabled]="previousDisabled" class="button" (click)="previous()">Previous</button>
+      <button [disabled]="nextDisabled" class="button" *ngIf="!isLastStep()" (click)="next()">Next</button>
+      <button class="button done" *ngIf="isLastStep()" (click)="finish()">Done</button>
+      <button class="button exit" *ngIf="!isLastStep()" (click)="exit()">Exit</button>
+    </div>
+  </div>
+</div>
